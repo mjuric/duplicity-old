@@ -602,7 +602,11 @@ class Path(ROPath):
             buf = fin.read(_copy_blocksize)
             if not buf:
                 break
-            fout.write(buf)
+            if buf.count('\0') == len(buf):
+                fout.seek(len(buf), 1)
+            else:
+                fout.write(buf)
+        fout.truncate(fout.tell())
         if fin.close() or fout.close():
             raise PathException("Error closing file object")
         self.setdata()
